@@ -1,32 +1,26 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 
-# Permitir cualquier origen
-CORS(app, resources={r"/*": {"origins": "*"}})
+# Permitir solo tu dominio público de GitHub Pages
+CORS(app, origins=["https://blanca-allende.github.io"])
 
 @app.route("/")
 def home():
     return jsonify({"message": "Servidor Flask corriendo 🚀 - usa /phi4 para probar el modelo"})
 
-@app.route("/phi4", methods=["POST", "OPTIONS"])
+@app.route("/phi4", methods=["POST"])
 def phi4():
-    if request.method == "OPTIONS":
-        # Responder preflight request
-        response = app.make_response('')
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
-        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
-        return response
-
     data = request.get_json()
-    prompt = data.get("prompt", "")
-    return jsonify({"message": f"Hola desde phi4! Recibí tu prompt: {prompt}"})
+    user_prompt = data.get("prompt", "")
+    # Aquí podrías procesar la solicitud con tu modelo
+    return jsonify({"message": f"Hola desde phi4! Recibí: {user_prompt}"})
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
